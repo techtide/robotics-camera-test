@@ -7,6 +7,12 @@
 
 package frc.robot;
 
+import org.opencv.imgproc.Imgproc;
+
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -46,6 +52,24 @@ public class Robot extends IterativeRobot {
   @Override
   public void robotPeriodic() {
     // Work with the camera. We always want this to be on basically.
+    // We need a thread for the camera server:
+    new Thread(() -> {
+      UsbCamera smallCamera = CameraServer.getInstance().startAutomaticCapture();
+      smallCamera.setResolution(640, 800);
+
+      // We actually want to apply blur onto the camera.
+      // Blur, this specific blur called Gaussian Blur, helps alleviate image quality.
+      CvSink sink = CameraServer.getInstance().getVideo();
+      CvSource output = CameraServer.getInstance().putVideo("Blur", 640, 480);
+      Mat originalSource = new Mat();
+      Mat outputSource = new Mat();
+
+      while(!Thread.interrupted()) {
+        CvSink.grabFrame(originalSource);
+        // Greyscale the image
+        Imgproc.cvtColor(originalSource, outputSource, Imgproc.COLOR_RGB2GRAY);
+      }
+    });
   }
 
   /**
