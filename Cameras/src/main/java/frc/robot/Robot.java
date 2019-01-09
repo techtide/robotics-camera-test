@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.cscore.CvSink;
@@ -60,16 +61,18 @@ public class Robot extends IterativeRobot {
       // We actually want to apply blur onto the camera.
       // Blur, this specific blur called Gaussian Blur, helps alleviate image quality.
       CvSink sink = CameraServer.getInstance().getVideo();
-      CvSource output = CameraServer.getInstance().putVideo("Blur", 640, 480);
-      Mat originalSource = new Mat();
-      Mat outputSource = new Mat();
+      CvSource output = CameraServer.getInstance().putVideo("Camera 1", 640, 480);
+      Mat originalSourceImg = new Mat();
+      Mat outputSourceImg = new Mat();
 
+      // Execute this code while the thread is still open:
       while(!Thread.interrupted()) {
-        CvSink.grabFrame(originalSource);
+        sink.grabFrame(originalSourceImg);
         // Greyscale the image
-        Imgproc.cvtColor(originalSource, outputSource, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.cvtColor(originalSourceImg, outputSourceImg, Imgproc.COLOR_RGB2GRAY);
+        output.putFrame(outputSourceImg);
       }
-    });
+    }).start();
   }
 
   /**
