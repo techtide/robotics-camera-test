@@ -37,9 +37,9 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+    m_chooser.setDefaultOption("The Dankest Auto", kDefaultAuto);
+    m_chooser.addOption("The Less Dank Auto", kCustomAuto);
+    SmartDashboard.putData("Our plebby auto options", m_chooser);
   }
 
   /**
@@ -73,6 +73,8 @@ public class Robot extends IterativeRobot {
         output.putFrame(outputSourceImg);
       }
     }).start();
+
+    
   }
 
   /**
