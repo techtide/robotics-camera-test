@@ -54,27 +54,50 @@ public class Robot extends IterativeRobot {
   public void robotPeriodic() {
     // Work with the camera. We always want this to be on basically.
     // We need a thread for the camera server:
-    new Thread(() -> {
-      UsbCamera smallCamera = CameraServer.getInstance().startAutomaticCapture();
-      smallCamera.setResolution(640, 800);
+    // new Thread(() -> {
+    //   UsbCamera smallCamera = CameraServer.getInstance().startAutomaticCapture();
+    //   smallCamera.setResolution(640, 800);
 
-      // We actually want to apply blur onto the camera.
-      // Blur, this specific blur called Gaussian Blur, helps alleviate image quality.
-      CvSink sink = CameraServer.getInstance().getVideo();
-      CvSource output = CameraServer.getInstance().putVideo("Camera 1", 640, 480);
-      Mat originalSourceImg = new Mat();
-      Mat outputSourceImg = new Mat();
+    //   // We actually want to apply blur onto the camera.
+    //   // Blur, this specific blur called Gaussian Blur, helps alleviate image quality.
+    //   CvSink sink = CameraServer.getInstance().getVideo();
+    //   CvSource output = CameraServer.getInstance().putVideo("Camera 1", 640, 480);
+    //   Mat originalSourceImg = new Mat();
+    //   Mat outputSourceImg = new Mat();
 
-      // Execute this code while the thread is still open:
-      while(!Thread.interrupted()) {
-        sink.grabFrame(originalSourceImg);
-        // Greyscale the image
-        Imgproc.cvtColor(originalSourceImg, outputSourceImg, Imgproc.COLOR_RGB2GRAY);
-        output.putFrame(outputSourceImg);
-      }
-    }).start();
+    //   // Execute this code while the thread is still open:
+    //   while(!Thread.interrupted()) {
+    //     sink.grabFrame(originalSourceImg);
+    //     // Greyscale the image
+    //     Imgproc.cvtColor(originalSourceImg, outputSourceImg, Imgproc.COLOR_RGB2GRAY);
+    //     output.putFrame(outputSourceImg);
+    //   }
+    // }).start();
 
     
+    // new Thread(() -> {
+    //   UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+    //   camera.setResolution(640, 800);
+      
+    //   CvSink cvSink = CameraServer.getInstance().getVideo();
+    //   CvSource cvOutput = CameraServer.getInstance().putVideo("Blur", 640, 480);
+    // }).start();
+    new Thread(() -> {
+      UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+      camera.setResolution(640, 480);
+      
+      CvSink cvSink = CameraServer.getInstance().getVideo();
+      CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
+      
+      Mat source = new Mat();
+      Mat output = new Mat();
+      
+      while(!Thread.interrupted()) {
+          cvSink.grabFrame(source);
+          Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+          outputStream.putFrame(output);
+      }
+    }).start();
   }
 
   /**
